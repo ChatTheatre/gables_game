@@ -61,7 +61,7 @@ clone_or_update "$GAME_GIT_URL" "$GAME_GIT_BRANCH" /var/game
 
 # If we're running on an already-provisioned system, don't keep DGD running
 touch /var/game/no_restart.txt
-/var/game/stop_game_server.sh
+/var/game/scripts/stop_game_server.sh
 
 # Reset the logfile and DGD database
 rm -f /var/log/dgd_server.out /var/log/dgd/server.out /var/skotos/skotos.database /var/skotos/skotos.database.old
@@ -70,15 +70,9 @@ touch /var/log/start_game_server.sh
 chown skotos /var/log/start_game_server.sh
 
 # Replace Crontab with just the pieces we need - specifically, do NOT start the old SkotOS DGD server any more.
-cat >~skotos/crontab.txt <<EndOfMessage
-@reboot /usr/local/websocket-to-tcp-tunnel/start-tunnel.sh
-* * * * * /usr/local/websocket-to-tcp-tunnel/search-tunnel.sh
-* * * * * /bin/bash -c "/var/www/html/user/admin/restartuserdb.sh >>/var/log/userdb/servers.txt"
-* * * * * /var/skotos/dev_scripts/stackscript/keep_authctl_running.sh
-1 5 1-2 * * /usr/bin/certbot renew
-* * * * *  /var/game/start_game_server.sh >>/var/log/start_game_server.sh
+cat >>~skotos/crontab.txt <<EndOfMessage
+* * * * *  /var/game/scripts/start_game_server.sh >>/var/log/start_game_server.sh
 EndOfMessage
-chown skotos ~skotos/crontab.txt
 
 # In case we're re-running, don't keep statedump files around
 rm -f /var/game/skotos.database*
@@ -208,6 +202,7 @@ var profiles = {
         }
 };
 EndOfMessage
+chown skotos /var/game/root/usr/Gables/data/www/profiles.js
 cp /var/game/root/usr/Gables/data/www/profiles.js /var/game/.root/usr/Gables/data/www/
 chown skotos /var/game/.root/usr/Gables/data/www/profiles.js
 
