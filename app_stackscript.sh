@@ -4,9 +4,9 @@
 # SUBDOMAIN=
 # <UDF name="userpassword" label="Deployment User Password" example="Password for various accounts and infrastructure." />
 # USERPASSWORD=
-# <UDF name="game_git_url" label="The Game's Git URL" default="https://github.com/noahgibbs/prototype_vRWOT" example="RWOT Git URL to clone for your game." optional="false" />
+# <UDF name="game_git_url" label="The Game's Git URL" default="https://github.com/ChatTheatre/gables_game" example="Game Git URL to clone for your game." optional="false" />
 # GAME_GIT_URL=
-# <UDF name="game_git_branch" label="The Game's Git Branch" default="master" example="RWOT branch, tag or commit to clone for your game." optional="false" />
+# <UDF name="game_git_branch" label="The Game's Git Branch" default="master" example="Game branch, tag or commit to clone for your game." optional="false" />
 # GAME_GIT_BRANCH=
 # <UDF name="skotos_stackscript_url" label="URL for the base stackscript to build on" default="https://raw.githubusercontent.com/noahgibbs/SkotOS/dgd_manifest/dev_scripts/stackscript/linode_stackscript.sh" example="SkotOS stackscript to build on top of." optional="false" />
 # SKOTOS_STACKSCRIPT_URL=
@@ -38,7 +38,7 @@ function clone_or_update {
 }
 
 # Parameters to pass to the SkotOS stackscript
-export HOSTNAME="rwot"
+export HOSTNAME="gables"
 export FQDN_CLIENT=gables."$SUBDOMAIN"
 export FQDN_LOGIN=gables-login."$SUBDOMAIN"
 export SKOTOS_GIT_URL=https://github.com/noahgibbs/SkotOS
@@ -57,22 +57,17 @@ then
     NO_DGD_SERVER=true . ~root/skotos_stackscript.sh
 fi
 
-clone_or_update "$GAME_GIT_URL" "$GAME_GIT_BRANCH" /var/rwot
+clone_or_update "$GAME_GIT_URL" "$GAME_GIT_BRANCH" /var/game
 
 # If we're running on an already-provisioned system, don't keep DGD running
-touch /var/rwot/no_restart.txt
-/var/rwot/stop_rwot_server.sh
-
-# Keep SkotOS DGD from being restarted by normal script (which shouldn't run anyway.)
-touch /var/skotos/no_restart.txt
-# We'll shut down SkotOS's DGD server and set up our own RWOT-specific DGD app.
-/var/skotos/dev_scripts/stackscript/stop_dgd_server.sh
+touch /var/game/no_restart.txt
+/var/game/stop_game_server.sh
 
 # Reset the logfile and DGD database
 rm -f /var/log/dgd_server.out /var/log/dgd/server.out /var/skotos/skotos.database /var/skotos/skotos.database.old
 
-touch /var/log/start_rwot_server.sh
-chown skotos /var/log/start_rwot_server.sh
+touch /var/log/start_game_server.sh
+chown skotos /var/log/start_game_server.sh
 
 # Replace Crontab with just the pieces we need - specifically, do NOT start the old SkotOS DGD server any more.
 cat >~skotos/crontab.txt <<EndOfMessage
@@ -81,12 +76,12 @@ cat >~skotos/crontab.txt <<EndOfMessage
 * * * * * /bin/bash -c "/var/www/html/user/admin/restartuserdb.sh >>/var/log/userdb/servers.txt"
 * * * * * /var/skotos/dev_scripts/stackscript/keep_authctl_running.sh
 1 5 1-2 * * /usr/bin/certbot renew
-* * * * *  /var/rwot/start_rwot_server.sh >>/var/log/start_rwot_server.sh
+* * * * *  /var/game/start_game_server.sh >>/var/log/start_game_server.sh
 EndOfMessage
 chown skotos ~skotos/crontab.txt
 
 # In case we're re-running, don't keep statedump files around
-rm -f /var/rwot/skotos.database*
+rm -f /var/game/skotos.database*
 
 cat >~skotos/dgd_pre_setup.sh <<EndOfMessage
 #!/bin/bash
@@ -94,32 +89,32 @@ cat >~skotos/dgd_pre_setup.sh <<EndOfMessage
 set -e
 set -x
 
-cd /var/rwot
+cd /var/game
 bundle install
 bundle exec dgd-manifest install
 EndOfMessage
 chmod +x ~skotos/dgd_pre_setup.sh
 sudo -u skotos ~skotos/dgd_pre_setup.sh
 
-# We modify files in /var/rwot/.root after dgd-manifest has created the initial app directory.
-# But we also copy those files into /var/rwot/root (note: no dot) so that if the user later
+# We modify files in /var/game/.root after dgd-manifest has created the initial app directory.
+# But we also copy those files into /var/game/root (note: no dot) so that if the user later
 # rebuilds with dgd-manifest, the modified files will be kept.
 
 # May need this for logging in on telnet port and/or admin-only emergency port
-DEVUSERD=/var/rwot/.root/usr/System/sys/devuserd.c
+DEVUSERD=/var/game/.root/usr/System/sys/devuserd.c
 if grep -F "user_to_hash = ([ ])" $DEVUSERD
 then
     # Unpatched - need to patch
     sed -i "s/user_to_hash = (\[ \]);/user_to_hash = ([ \"admin\": to_hex(hash_md5(\"admin\" + \"$USERPASSWORD\")), \"skott\": to_hex(hash_md5(\"skott\" + \"$USERPASSWORD\")) ]);/g" $DEVUSERD
 else
-    echo "/var/rwot DevUserD appears to be patched already. Moving on..."
+    echo "/var/game DevUserD appears to be patched already. Moving on..."
 fi
-mkdir -p /var/rwot/root/usr/System/sys
-cp $DEVUSERD /var/rwot/root/usr/System/sys/
-chown skotos:skotos /var/rwot/root/usr/System/sys/devuserd.c
+mkdir -p /var/game/root/usr/System/sys
+cp $DEVUSERD /var/game/root/usr/System/sys/
+chown skotos:skotos /var/game/root/usr/System/sys/devuserd.c
 
 # Fix the login URL
-HTTP_FILE=/var/rwot/.root/usr/HTTP/sys/httpd.c
+HTTP_FILE=/var/game/.root/usr/HTTP/sys/httpd.c
 if grep -F "www.skotos.net/user/login.php" $HTTP_FILE
 then
     # Unpatched - need to patch
@@ -127,12 +122,12 @@ then
 else
     echo "HTTPD appears to be patched already. Moving on..."
 fi
-mkdir -p /var/rwot/usr/HTTP/sys
-cp $HTTP_FILE /var/rwot/usr/HTTP/sys/
-chown skotos:skotos /var/rwot/usr/HTTP/sys/httpd.c
+mkdir -p /var/game/usr/HTTP/sys
+cp $HTTP_FILE /var/game/usr/HTTP/sys/
+chown skotos:skotos /var/game/usr/HTTP/sys/httpd.c
 
 # Instance file
-cat >/var/rwot/.root/usr/System/data/instance <<EndOfMessage
+cat >/var/game/.root/usr/System/data/instance <<EndOfMessage
 portbase 10000
 hostname $FQDN_CLIENT
 bootmods DevSys Theatre Jonkichi Tool Generic SMTP UserDB Gables
@@ -147,17 +142,17 @@ memory_max 256
 statedump_offset 600
 freemote +emote
 EndOfMessage
-chown skotos:skotos /var/rwot/.root/usr/System/data/instance
-cp /var/rwot/.root/usr/System/data/instance /var/rwot/root/usr/System/data/
-chown skotos:skotos /var/rwot/root/usr/System/data/instance
+chown skotos:skotos /var/game/.root/usr/System/data/instance
+cp /var/game/.root/usr/System/data/instance /var/game/root/usr/System/data/
+chown skotos:skotos /var/game/root/usr/System/data/instance
 
-cat >/var/rwot/.root/usr/System/data/userdb <<EndOfMessage
+cat >/var/game/.root/usr/System/data/userdb <<EndOfMessage
 userdb-hostname 127.0.0.1
 userdb-portbase 9900
 EndOfMessage
 
-# Add vRWOT SkotOS config file
-cat >/var/rwot/skotos.config <<EndOfMessage
+# Add SkotOS config file
+cat >/var/game/skotos.config <<EndOfMessage
 telnet_port = ([ "*": 10098 ]); /* telnet port for low-level game admin access */
 binary_port = ([ "*": 10099, /* admin-only emergency game access port */
              "*": 10017,     /* UserAPI::Broadcast port */
@@ -194,7 +189,7 @@ objects     = 300000;       /* max # of objects */
 call_outs   = 16384;        /* max # of call_outs */
 EndOfMessage
 
-cat >/var/rwot/root/usr/Gables/data/www/profiles.js <<EndOfMessage
+cat >/var/game/root/usr/Gables/data/www/profiles.js <<EndOfMessage
 "use strict";
 // orchil/profiles.js
 var profiles = {
@@ -213,15 +208,15 @@ var profiles = {
         }
 };
 EndOfMessage
-cp /var/rwot/root/usr/Gables/data/www/profiles.js /var/rwot/.root/usr/Gables/data/www/
-chown skotos /var/rwot/.root/usr/Gables/data/www/profiles.js
+cp /var/game/root/usr/Gables/data/www/profiles.js /var/game/.root/usr/Gables/data/www/
+chown skotos /var/game/.root/usr/Gables/data/www/profiles.js
 
 cat >~skotos/dgd_final_setup.sh <<EndOfMessage
 crontab ~/crontab.txt
-rm -f /var/rwot/no_restart.txt  # Just in case
+rm -f /var/game/no_restart.txt  # Just in case
 EndOfMessage
 chmod +x ~skotos/dgd_final_setup.sh
 sudo -u skotos ~skotos/dgd_final_setup.sh
 rm ~skotos/dgd_final_setup.sh
 
-touch ~/rwot_stackscript_finished_successfully.txt
+touch ~/game_stackscript_finished_successfully.txt
