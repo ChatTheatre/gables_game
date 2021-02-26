@@ -88,7 +88,7 @@ bundle install
 bundle exec dgd-manifest install
 EndOfMessage
 chmod +x ~skotos/dgd_pre_setup.sh
-sudo -u skotos ~skotos/dgd_pre_setup.sh
+sudo -u skotos -g skotos ~skotos/dgd_pre_setup.sh
 
 # We modify files in /var/game/.root after dgd-manifest has created the initial app directory.
 # But we also copy those files into /var/game/root (note: no dot) so that if the user later
@@ -103,9 +103,8 @@ then
 else
     echo "/var/game DevUserD appears to be patched already. Moving on..."
 fi
-mkdir -p /var/game/root/usr/System/sys
-cp $DEVUSERD /var/game/root/usr/System/sys/
-chown skotos:skotos /var/game/root/usr/System/sys/devuserd.c
+sudo -u skotos -g skotos mkdir -p /var/game/root/usr/System/sys
+sudo -u skotos -g skotos cp $DEVUSERD /var/game/root/usr/System/sys/
 
 # Fix the login URL
 HTTP_FILE=/var/game/.root/usr/HTTP/sys/httpd.c
@@ -116,12 +115,11 @@ then
 else
     echo "HTTPD appears to be patched already. Moving on..."
 fi
-mkdir -p /var/game/usr/HTTP/sys
-cp $HTTP_FILE /var/game/usr/HTTP/sys/
-chown skotos:skotos /var/game/usr/HTTP/sys/httpd.c
+sudo -u skotos -g skotos mkdir -p /var/game/usr/HTTP/sys
+sudo -u skotos -g skotos cp $HTTP_FILE /var/game/usr/HTTP/sys/
 
 # Instance file
-cat >/var/game/.root/usr/System/data/instance <<EndOfMessage
+sudo -u skotos -g skotos cat >/var/game/.root/usr/System/data/instance <<EndOfMessage
 portbase 10000
 hostname $FQDN_CLIENT
 bootmods DevSys Theatre Jonkichi Tool Generic SMTP UserDB Gables
@@ -136,17 +134,16 @@ memory_max 256
 statedump_offset 600
 freemote +emote
 EndOfMessage
-chown skotos:skotos /var/game/.root/usr/System/data/instance
-cp /var/game/.root/usr/System/data/instance /var/game/root/usr/System/data/
-chown skotos:skotos /var/game/root/usr/System/data/instance
+sudo -u skotos -g skotos mkdir -p /var/game/root/usr/System/data/
+sudo -u skotos -g skotos cp /var/game/.root/usr/System/data/instance /var/game/root/usr/System/data/
 
-cat >/var/game/.root/usr/System/data/userdb <<EndOfMessage
+sudo -u skotos -g skotos cat >/var/game/.root/usr/System/data/userdb <<EndOfMessage
 userdb-hostname 127.0.0.1
 userdb-portbase 9900
 EndOfMessage
 
 # Add SkotOS config file
-cat >/var/game/skotos.config <<EndOfMessage
+sudo -u skotos -g skotos cat >/var/game/skotos.config <<EndOfMessage
 telnet_port = ([ "*": 10098 ]); /* telnet port for low-level game admin access */
 binary_port = ([ "*": 10099, /* admin-only emergency game access port */
              "*": 10017,     /* UserAPI::Broadcast port */
@@ -183,7 +180,7 @@ objects     = 300000;       /* max # of objects */
 call_outs   = 16384;        /* max # of call_outs */
 EndOfMessage
 
-cat >/var/game/root/usr/Gables/data/www/profiles.js <<EndOfMessage
+sudo -u skotos -g skotos cat >/var/game/root/usr/Gables/data/www/profiles.js <<EndOfMessage
 "use strict";
 // orchil/profiles.js
 var profiles = {
@@ -202,16 +199,14 @@ var profiles = {
         }
 };
 EndOfMessage
-chown skotos /var/game/root/usr/Gables/data/www/profiles.js
-cp /var/game/root/usr/Gables/data/www/profiles.js /var/game/.root/usr/Gables/data/www/
-chown skotos /var/game/.root/usr/Gables/data/www/profiles.js
+sudo -u skotos -g skotos cp /var/game/root/usr/Gables/data/www/profiles.js /var/game/.root/usr/Gables/data/www/
 
-cat >~skotos/dgd_final_setup.sh <<EndOfMessage
+sudo -u skotos -g skotos cat >~skotos/dgd_final_setup.sh <<EndOfMessage
 crontab ~/crontab.txt
 rm -f /var/game/no_restart.txt  # Just in case
 EndOfMessage
 chmod +x ~skotos/dgd_final_setup.sh
-sudo -u skotos ~skotos/dgd_final_setup.sh
+sudo -u skotos -g skotos ~skotos/dgd_final_setup.sh
 rm ~skotos/dgd_final_setup.sh
 
 touch ~/game_stackscript_finished_successfully.txt
