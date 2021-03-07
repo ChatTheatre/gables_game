@@ -2,8 +2,8 @@
     "name": "The Gables",
     "version": "0.1.0",
     "description": "A simple SkotOS application",
-    "app_root": "root",
     "config": {
+        "app_root": "root",
         "editors": 0,
         "telnet_ports": [10098],
         "ports": [10099, 10017, 10070, 10071, 10080, 10089, 10090, 10091, 10443],
