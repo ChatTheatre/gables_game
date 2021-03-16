@@ -13,12 +13,12 @@ fi
 
 if [ -f skotos.database ]
 then
-    SKOTOS_CMD="/var/dgd/bin/dgd skotos.config skotos.database"
+    SKOTOS_CMD="/var/dgd/bin/dgd dgd.config skotos.database"
 else
-    SKOTOS_CMD="/var/dgd/bin/dgd skotos.config"
+    SKOTOS_CMD="/var/dgd/bin/dgd dgd.config"
 fi
 
-if ps aux | grep "/var/dgd/bin/dgd skotos.config" | grep -v grep
+if ps aux | grep "/var/dgd/bin/dgd dgd.config" | grep -v grep
 then
 	echo "DGD server is already running"
 else
