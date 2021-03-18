@@ -51,7 +51,7 @@ export THINAUTH_GIT_BRANCH=master
 export TUNNEL_GIT_URL=https://github.com/ChatTheatre/websocket-to-tcp-tunnel
 export TUNNEL_GIT_BRANCH=master
 
-if [ -z "$SKIP_INNER" ]
+if [ ! -z "$SKIP_INNER" ]
 then
     # Set up the node using the normal SkotOS Linode stackscript
     curl $SKOTOS_STACKSCRIPT_URL > ~root/skotos_stackscript.sh
