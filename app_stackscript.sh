@@ -75,6 +75,8 @@ EndOfMessage
 # In case we're re-running, don't keep statedump files around
 rm -f /var/game/skotos.database*
 
+cd /var/game && bundle install
+
 cat >~skotos/dgd_pre_setup.sh <<EndOfMessage
 #!/bin/bash
 
@@ -82,7 +84,6 @@ set -e
 set -x
 
 cd /var/game
-bundle install
 bundle exec dgd-manifest install
 EndOfMessage
 chmod +x ~skotos/dgd_pre_setup.sh
