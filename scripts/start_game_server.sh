@@ -3,7 +3,7 @@
 set -e
 set -x
 
-cd /var/rwot
+cd /var/game
 
 if [ -f no_restart.txt ]
 then
