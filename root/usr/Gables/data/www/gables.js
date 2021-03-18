@@ -24,7 +24,7 @@
 		addComponent('comp_s' , 'right_fill', 'comp_button', 'compassArrow', ['south'],     false, 'go south');
 		addComponent('comp_se', 'right_fill', 'comp_button', 'compassArrow', ['southeast'], false, 'go southeast');
 
-		jitsiDomain = window.location.hostname.replace("rwot.", "meet.");
+		jitsiDomain = window.location.hostname.replace("gables.", "meet.");
 
 		// Add the Jitsi external_api script for our correct domain
 		var script = document.createElement('script');
@@ -37,7 +37,7 @@
 		// Jitsi Setup - for more Jitsi, see: https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe
 		// For list of config options: https://github.com/jitsi/jitsi-meet/blob/master/config.js
 		const options = {
-		    roomName: 'RWOTTesting',
+		    roomName: 'GablesTop',
 		    width: 600,
 		    height: 300,
 		    parentNode: document.querySelector('#meet'),

@@ -8,7 +8,7 @@
 # GAME_GIT_URL=
 # <UDF name="game_git_branch" label="The Game's Git Branch" default="master" example="Game branch, tag or commit to clone for your game." optional="false" />
 # GAME_GIT_BRANCH=
-# <UDF name="skotos_stackscript_url" label="URL for the base stackscript to build on" default="https://raw.githubusercontent.com/noahgibbs/SkotOS/dgd_manifest/dev_scripts/stackscript/linode_stackscript.sh" example="SkotOS stackscript to build on top of." optional="false" />
+# <UDF name="skotos_stackscript_url" label="URL for the base stackscript to build on" default="https://raw.githubusercontent.com/noahgibbs/SkotOS/ops_reorg/deploy_scripts/stackscript/linode_stackscript.sh" example="SkotOS stackscript to build on top of." optional="false" />
 # SKOTOS_STACKSCRIPT_URL=
 
 set -e
@@ -41,8 +41,9 @@ function clone_or_update {
 export HOSTNAME="gables"
 export FQDN_CLIENT=gables."$SUBDOMAIN"
 export FQDN_LOGIN=gables-login."$SUBDOMAIN"
+export FQDN_JITSI=meet."$SUBDOMAIN"
 export SKOTOS_GIT_URL=https://github.com/noahgibbs/SkotOS
-export SKOTOS_GIT_BRANCH=dgd_manifest
+export SKOTOS_GIT_BRANCH=ops_reorg
 export DGD_GIT_URL=https://github.com/ChatTheatre/dgd
 export DGD_GIT_BRANCH=master
 export THINAUTH_GIT_URL=https://github.com/ChatTheatre/thin-auth
@@ -52,30 +53,36 @@ export TUNNEL_GIT_BRANCH=master
 
 if [ -z "$SKIP_INNER" ]
 then
+    echo "Running SkotOS StackScript..."
     # Set up the node using the normal SkotOS Linode stackscript
     curl $SKOTOS_STACKSCRIPT_URL > ~root/skotos_stackscript.sh
-    NO_DGD_SERVER=true . ~root/skotos_stackscript.sh
+    . ~root/skotos_stackscript.sh
 fi
 
 clone_or_update "$GAME_GIT_URL" "$GAME_GIT_BRANCH" /var/game
 
-# If we're running on an already-provisioned system, don't keep DGD running
-touch /var/game/no_restart.txt
-/var/game/scripts/stop_game_server.sh
-
-# Reset the logfile and DGD database
-rm -f /var/log/dgd_server.out /var/log/dgd/server.out /var/skotos/skotos.database /var/skotos/skotos.database.old
+# Reset the logfile
+rm -f /var/log/dgd/server.out
 
 touch /var/log/start_game_server.sh
 chown skotos /var/log/start_game_server.sh
 
 # Replace Crontab with just the pieces we need - specifically, do NOT start the old SkotOS DGD server any more.
-cat >>~skotos/crontab.txt <<EndOfMessage
+if grep /var/game/scripts/start_game_server.sh ~skotos/crontab.txt
+then
+  echo "Crontab has the appropriate entry already..."
+else
+  cat >>~skotos/crontab.txt <<EndOfMessage
 * * * * *  /var/game/scripts/start_game_server.sh >>/var/log/start_game_server.sh
 EndOfMessage
+fi
 
-# In case we're re-running, don't keep statedump files around
+# In case we're re-running, don't keep statedump files around and keep DGD server from restarting until we're ready.
+touch /var/game/no_restart.txt
+/var/game/scripts/stop_game_server.sh
 rm -f /var/game/skotos.database*
+
+cd /var/game && bundle install
 
 cat >~skotos/dgd_pre_setup.sh <<EndOfMessage
 #!/bin/bash
@@ -84,7 +91,6 @@ set -e
 set -x
 
 cd /var/game
-bundle install
 bundle exec dgd-manifest install
 EndOfMessage
 chmod +x ~skotos/dgd_pre_setup.sh
@@ -142,49 +148,11 @@ userdb-hostname 127.0.0.1
 userdb-portbase 9900
 EndOfMessage
 
-# Add SkotOS config file
-sudo -u skotos -g skotos cat >/var/game/skotos.config <<EndOfMessage
-telnet_port = ([ "*": 10098 ]); /* telnet port for low-level game admin access */
-binary_port = ([ "*": 10099, /* admin-only emergency game access port */
-             "*": 10017,     /* UserAPI::Broadcast port */
-             "*": 10070,     /* UserDB Auth port - DO NOT EXPOSE THROUGH FIREWALL */
-             "*": 10071,     /* UserDB Ctl port - DO NOT EXPOSE THROUGH FIREWALL */
-             "*": 10080,     /* HTTP port */
-             "*": 10089,     /* DevSys HTTP port */
-             "*": 10090,     /* WOE port, relayed to by websockets */
-             "*": 10091,     /* DevSys ExportD port */
-             "*": 10443 ]);  /* TextIF port, relayed to by websockets */
-directory   = "./.root";
-users       = 100;
-editors     = 0;
-ed_tmpfile  = "../state/ed";
-swap_file   = "../state/swap";
-swap_size   = 1048576;      /* # sectors in swap file */
-cache_size  = 8192;         /* # sectors in swap cache */
-sector_size = 512;          /* swap sector size */
-swap_fragment   = 4096;         /* fragment to swap out */
-static_chunk    = 64512;        /* static memory chunk */
-dynamic_chunk   = 261120;       /* dynamic memory chunk */
-dump_interval   = 7200;         /* two hours between dumps */
-dump_file   = "../skotos.database";
-
-typechecking    = 2;            /* global typechecking */
-include_file    = "/include/std.h"; /* standard include file */
-include_dirs    = ({ "/include", "~/include" }); /* directories to search */
-auto_object = "/kernel/lib/auto";   /* auto inherited object */
-driver_object   = "/kernel/sys/driver"; /* driver object */
-create      = "_F_create";      /* name of create function */
-
-array_size  = 16384;        /* max array size */
-objects     = 300000;       /* max # of objects */
-call_outs   = 16384;        /* max # of call_outs */
-EndOfMessage
-
 sudo -u skotos -g skotos cat >/var/game/root/usr/Gables/data/www/profiles.js <<EndOfMessage
 "use strict";
 // orchil/profiles.js
 var profiles = {
-        "portal_gables":{
+        "portal_game":{
                 "method":   "websocket",
                 "protocol": "wss",
                 "web_protocol": "https",
@@ -208,5 +176,8 @@ EndOfMessage
 chmod +x ~skotos/dgd_final_setup.sh
 sudo -u skotos -g skotos ~skotos/dgd_final_setup.sh
 rm ~skotos/dgd_final_setup.sh
+
+# Get set up for a fresh DGD restart from cron - let it happen again.
+rm -f /var/game/skotos.database /var/game/skotos.database.old /var/game/no_restart.txt
 
 touch ~/game_stackscript_finished_successfully.txt
