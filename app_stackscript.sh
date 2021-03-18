@@ -78,6 +78,7 @@ EndOfMessage
 fi
 
 # In case we're re-running, don't keep statedump files around
+/var/game/scripts/stop_game_server.sh
 rm -f /var/game/skotos.database*
 
 cd /var/game && bundle install
