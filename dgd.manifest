@@ -14,7 +14,7 @@
             "name": "SkotOS DGD Code",
             "git": {
                 "url": "https://github.com/noahgibbs/SkotOS.git",
-                "branch": "dgd_manifest"
+                "branch": "master"
             },
             "paths": {
                 "skoot": "."
