@@ -62,15 +62,20 @@ fi
 clone_or_update "$GAME_GIT_URL" "$GAME_GIT_BRANCH" /var/game
 
 # Reset the logfile
-rm -f /var/log/dgd_server.out /var/log/dgd/server.out
+rm -f /var/log/dgd/server.out
 
 touch /var/log/start_game_server.sh
 chown skotos /var/log/start_game_server.sh
 
 # Replace Crontab with just the pieces we need - specifically, do NOT start the old SkotOS DGD server any more.
-cat >>~skotos/crontab.txt <<EndOfMessage
+if grep /var/game/scripts/start_game_server.sh ~skotos/crontab.txt
+then
+  echo "Crontab has the appropriate entry already..."
+else
+  cat >>~skotos/crontab.txt <<EndOfMessage
 * * * * *  /var/game/scripts/start_game_server.sh >>/var/log/start_game_server.sh
 EndOfMessage
+fi
 
 # In case we're re-running, don't keep statedump files around
 rm -f /var/game/skotos.database*
