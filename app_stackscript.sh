@@ -77,7 +77,8 @@ else
 EndOfMessage
 fi
 
-# In case we're re-running, don't keep statedump files around
+# In case we're re-running, don't keep statedump files around and keep DGD server from restarting until we're ready.
+touch /var/game/no_restart.txt
 /var/game/scripts/stop_game_server.sh
 rm -f /var/game/skotos.database*
 
@@ -175,5 +176,8 @@ EndOfMessage
 chmod +x ~skotos/dgd_final_setup.sh
 sudo -u skotos -g skotos ~skotos/dgd_final_setup.sh
 rm ~skotos/dgd_final_setup.sh
+
+# Get set up for a fresh DGD restart from cron - let it happen again.
+rm -f /var/game/skotos.database /var/game/skotos.database.old /var/game/no_restart.txt
 
 touch ~/game_stackscript_finished_successfully.txt
