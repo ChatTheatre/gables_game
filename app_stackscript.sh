@@ -100,18 +100,6 @@ sudo -u skotos -g skotos ~skotos/dgd_pre_setup.sh
 # But we also copy those files into /var/game/root (note: no dot) so that if the user later
 # rebuilds with dgd-manifest, the modified files will be kept.
 
-# May need this for logging in on telnet port and/or admin-only emergency port
-DEVUSERD=/var/game/.root/usr/System/sys/devuserd.c
-if grep -F "user_to_hash = ([ ])" $DEVUSERD
-then
-    # Unpatched - need to patch
-    sed -i "s/user_to_hash = (\[ \]);/user_to_hash = ([ \"admin\": to_hex(hash_md5(\"admin\" + \"$USERPASSWORD\")), \"skott\": to_hex(hash_md5(\"skott\" + \"$USERPASSWORD\")) ]);/g" $DEVUSERD
-else
-    echo "/var/game DevUserD appears to be patched already. Moving on..."
-fi
-sudo -u skotos -g skotos mkdir -p /var/game/root/usr/System/sys
-sudo -u skotos -g skotos cp $DEVUSERD /var/game/root/usr/System/sys/
-
 # Fix the login URL
 HTTP_FILE=/var/game/.root/usr/HTTP/sys/httpd.c
 if grep -F "www.skotos.net/user/login.php" $HTTP_FILE
@@ -142,11 +130,6 @@ freemote +emote
 EndOfMessage
 sudo -u skotos -g skotos mkdir -p /var/game/root/usr/System/data/
 sudo -u skotos -g skotos cp /var/game/.root/usr/System/data/instance /var/game/root/usr/System/data/
-
-sudo -u skotos -g skotos cat >/var/game/.root/usr/System/data/userdb <<EndOfMessage
-userdb-hostname 127.0.0.1
-userdb-portbase 9900
-EndOfMessage
 
 sudo -u skotos -g skotos cat >/var/game/root/usr/Gables/data/www/profiles.js <<EndOfMessage
 "use strict";

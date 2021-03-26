@@ -14,7 +14,7 @@
             "name": "SkotOS DGD Code",
             "git": {
                 "url": "https://github.com/noahgibbs/SkotOS.git",
-                "branch": "master"
+                "branch": "userapi_rework"
             },
             "paths": {
                 "skoot": "."
