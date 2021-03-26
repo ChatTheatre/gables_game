@@ -116,7 +116,7 @@ sudo -u skotos -g skotos cp $HTTP_FILE /var/game/usr/HTTP/sys/
 sudo -u skotos -g skotos cat >/var/game/.root/usr/System/data/instance <<EndOfMessage
 portbase 10000
 hostname $FQDN_CLIENT
-bootmods DevSys Theatre Jonkichi Tool Generic SMTP UserDB Gables
+bootmods DevSys Theatre Jonkichi Tool Generic SMTP Gables
 textport 443
 real_textport 10443
 webport 10803

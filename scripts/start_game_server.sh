@@ -18,7 +18,7 @@ else
     SKOTOS_CMD="/var/dgd/bin/dgd dgd.config"
 fi
 
-if ps aux | grep "/var/dgd/bin/dgd dgd.config" | grep -v grep
+if pgrep -f "/var/dgd/bin/dgd dgd.config"
 then
 	echo "DGD server is already running"
 else
