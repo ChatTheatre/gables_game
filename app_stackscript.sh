@@ -8,7 +8,7 @@
 # GAME_GIT_URL=
 # <UDF name="game_git_branch" label="The Game's Git Branch" default="master" example="Game branch, tag or commit to clone for your game." optional="false" />
 # GAME_GIT_BRANCH=
-# <UDF name="skotos_stackscript_url" label="URL for the base stackscript to build on" default="https://raw.githubusercontent.com/noahgibbs/SkotOS/ops_reorg/deploy_scripts/stackscript/linode_stackscript.sh" example="SkotOS stackscript to build on top of." optional="false" />
+# <UDF name="skotos_stackscript_url" label="URL for the base stackscript to build on" default="https://raw.githubusercontent.com/noahgibbs/SkotOS/master/deploy_scripts/stackscript/linode_stackscript.sh" example="SkotOS stackscript to build on top of." optional="false" />
 # SKOTOS_STACKSCRIPT_URL=
 
 set -e
@@ -100,18 +100,6 @@ sudo -u skotos -g skotos ~skotos/dgd_pre_setup.sh
 # But we also copy those files into /var/game/root (note: no dot) so that if the user later
 # rebuilds with dgd-manifest, the modified files will be kept.
 
-# May need this for logging in on telnet port and/or admin-only emergency port
-DEVUSERD=/var/game/.root/usr/System/sys/devuserd.c
-if grep -F "user_to_hash = ([ ])" $DEVUSERD
-then
-    # Unpatched - need to patch
-    sed -i "s/user_to_hash = (\[ \]);/user_to_hash = ([ \"admin\": to_hex(hash_md5(\"admin\" + \"$USERPASSWORD\")), \"skott\": to_hex(hash_md5(\"skott\" + \"$USERPASSWORD\")) ]);/g" $DEVUSERD
-else
-    echo "/var/game DevUserD appears to be patched already. Moving on..."
-fi
-sudo -u skotos -g skotos mkdir -p /var/game/root/usr/System/sys
-sudo -u skotos -g skotos cp $DEVUSERD /var/game/root/usr/System/sys/
-
 # Fix the login URL
 HTTP_FILE=/var/game/.root/usr/HTTP/sys/httpd.c
 if grep -F "www.skotos.net/user/login.php" $HTTP_FILE
@@ -128,7 +116,7 @@ sudo -u skotos -g skotos cp $HTTP_FILE /var/game/usr/HTTP/sys/
 sudo -u skotos -g skotos cat >/var/game/.root/usr/System/data/instance <<EndOfMessage
 portbase 10000
 hostname $FQDN_CLIENT
-bootmods DevSys Theatre Jonkichi Tool Generic SMTP UserDB Gables
+bootmods DevSys Theatre Jonkichi Tool Generic SMTP Gables
 textport 443
 real_textport 10443
 webport 10803
@@ -142,11 +130,6 @@ freemote +emote
 EndOfMessage
 sudo -u skotos -g skotos mkdir -p /var/game/root/usr/System/data/
 sudo -u skotos -g skotos cp /var/game/.root/usr/System/data/instance /var/game/root/usr/System/data/
-
-sudo -u skotos -g skotos cat >/var/game/.root/usr/System/data/userdb <<EndOfMessage
-userdb-hostname 127.0.0.1
-userdb-portbase 9900
-EndOfMessage
 
 sudo -u skotos -g skotos cat >/var/game/root/usr/Gables/data/www/profiles.js <<EndOfMessage
 "use strict";
