@@ -68,18 +68,18 @@ touch /var/log/start_game_server.sh
 chown skotos /var/log/start_game_server.sh
 
 # Replace Crontab with just the pieces we need - specifically, do NOT start the old SkotOS DGD server any more.
-if grep /var/game/scripts/start_game_server.sh ~skotos/crontab.txt
+if grep /var/game/deploy_scripts/stackscript/start_game_server.sh ~skotos/crontab.txt
 then
   echo "Crontab has the appropriate entry already..."
 else
   cat >>~skotos/crontab.txt <<EndOfMessage
-* * * * *  /var/game/scripts/start_game_server.sh >>/var/log/start_game_server.sh
+* * * * *  /var/game/deploy_scripts/stackscript/start_game_server.sh >>/var/log/start_game_server.sh
 EndOfMessage
 fi
 
 # In case we're re-running, don't keep statedump files around and keep DGD server from restarting until we're ready.
 touch /var/game/no_restart.txt
-/var/game/scripts/stop_game_server.sh
+/var/game/deploy_scripts/stackscript/stop_game_server.sh
 rm -f /var/game/skotos.database*
 
 cd /var/game && bundle install
