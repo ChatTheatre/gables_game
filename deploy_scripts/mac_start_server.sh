@@ -8,7 +8,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd $SCRIPT_DIR
 cd ..
 export GAME_ROOT="$(pwd)"
-SKOTOS_DIR="$HOME/.dgd-tools/git/https:__github.com_noahgibbs_SkotOS.git"
+SKOTOS_DIR="$HOME/.dgd-tools/git/https:__github.com_ChatTheatre_SkotOS.git"
 
 # You know what's easy to do accidentally? Not update.
 dgd-manifest update

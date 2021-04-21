@@ -8,7 +8,7 @@
 # GAME_GIT_URL=
 # <UDF name="game_git_branch" label="The Game's Git Branch" default="master" example="Game branch, tag or commit to clone for your game." optional="false" />
 # GAME_GIT_BRANCH=
-# <UDF name="skotos_stackscript_url" label="URL for the base stackscript to build on" default="https://raw.githubusercontent.com/noahgibbs/SkotOS/master/deploy_scripts/stackscript/linode_stackscript.sh" example="SkotOS stackscript to build on top of." optional="false" />
+# <UDF name="skotos_stackscript_url" label="URL for the base stackscript to build on" default="https://raw.githubusercontent.com/ChatTheatre/SkotOS/master/deploy_scripts/stackscript/linode_stackscript.sh" example="SkotOS stackscript to build on top of." optional="false" />
 # SKOTOS_STACKSCRIPT_URL=
 
 set -e
@@ -42,7 +42,7 @@ export HOSTNAME="gables"
 export FQDN_CLIENT=gables."$SUBDOMAIN"
 export FQDN_LOGIN=gables-login."$SUBDOMAIN"
 export FQDN_JITSI=meet."$SUBDOMAIN"
-export SKOTOS_GIT_URL=https://github.com/noahgibbs/SkotOS
+export SKOTOS_GIT_URL=https://github.com/ChatTheatre/SkotOS
 export SKOTOS_GIT_BRANCH=ops_reorg
 export DGD_GIT_URL=https://github.com/ChatTheatre/dgd
 export DGD_GIT_BRANCH=master

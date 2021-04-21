@@ -54,11 +54,11 @@ fi
 # blow those away.
 dgd-manifest update
 
-#SKOTOS_DIR="~/.dgd-tools/git/https\:__github.com_noahgibbs_SkotOS.git"
+#SKOTOS_DIR="~/.dgd-tools/git/https\:__github.com_ChatTheatre_SkotOS.git"
 
 # This assumes GAME_ROOT is set to clone all the appropriate repos locally.
 #"$SKOTOS_DIR/deploy_scripts/mac_setup/setup_no_server.sh"
-"$HOME/.dgd-tools/git/https:__github.com_noahgibbs_SkotOS.git/deploy_scripts/mac_setup/setup_no_server.sh"
+"$HOME/.dgd-tools/git/https:__github.com_ChatTheatre_SkotOS.git/deploy_scripts/mac_setup/setup_no_server.sh"
 
 # We did setup. Now, for startup.
 ./deploy_scripts/mac_start_server.sh
