@@ -1,9 +1,7 @@
 "use strict";
 //-----Component Setup
 	var bigMapHREF;
-	var userName;
 	var jitsiDomain;
-	var jitsiIsSetUp;
 	function initTheatre() {
 		addComponent('chat_theatre'   , 'left'    , false, 'openerWin', ['http://game.gables.chattheatre.com/'], '<img alt="Grand Theatre" src="http://images.gables.chattheatre.com/gamelogo.jpg">');
 		addComponent('skotos_logo'    , 'right'   , false);
@@ -24,14 +22,16 @@
 		addComponent('comp_s' , 'right_fill', 'comp_button', 'compassArrow', ['south'],     false, 'go south');
 		addComponent('comp_se', 'right_fill', 'comp_button', 'compassArrow', ['southeast'], false, 'go southeast');
 
-		jitsiDomain = window.location.hostname.replace("gables.", "meet.");
+		if(window.location.hostname != "localhost") {
+			jitsiDomain = window.location.hostname.replace("gables.", "meet.");
 
-		// Add the Jitsi external_api script for our correct domain
-		var script = document.createElement('script');
-		script.type = 'text/javascript';
-		script.src = 'https://' + jitsiDomain + '/external_api.js';
-                document.head.appendChild(script);
-                jitsiIsSetUp = false;
+			// Add the Jitsi external_api script for our correct domain
+			var script = document.createElement('script');
+			script.type = 'text/javascript';
+			script.src = 'https://' + jitsiDomain + '/external_api.js';
+                	document.head.appendChild(script);
+			setupJitsi();
+		}
 	}
 	function setupJitsi() {
 		// Jitsi Setup - for more Jitsi, see: https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe
@@ -43,7 +43,7 @@
 		    parentNode: document.querySelector('#meet'),
 		    configOverwrite: { startAudioOnly: true },
 		    userInfo: {
-		        displayName: userName
+		        displayName: loadCookie("user")
 		    }
 		};
 		const api = new JitsiMeetExternalAPI(jitsiDomain, options);
@@ -105,13 +105,7 @@
 			showHVMapLinks(msg);
 			break;
 		case 21:
-			// Before our username, msg contains a user ID we don't keep track of
-			if(jitsiIsSetUp) break;
-			jitsiIsSetUp = true;
-			var pos = msg.indexOf(" ");
-			userName = msg.substring(pos);
-			console.log("SkotOS user name: " + userName);
-			setupJitsi();
+			// This is for a player or similar creature entering
 			break;
 		case 70:
 	   		popupWin(msg, "SkotosToolSourceView", 800, 600);
