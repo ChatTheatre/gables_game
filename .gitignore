@@ -6,3 +6,5 @@ wafer
 websocket-to-tcp-tunnel
 dgd
 log/*
+skotos.database
+skotos.database.old
