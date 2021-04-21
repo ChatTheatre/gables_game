@@ -5,3 +5,4 @@ state/*
 wafer
 websocket-to-tcp-tunnel
 dgd
+log/*
