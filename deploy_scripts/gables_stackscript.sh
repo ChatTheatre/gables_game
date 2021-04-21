@@ -135,7 +135,7 @@ sudo -u skotos -g skotos cat >/var/game/root/usr/Gables/data/www/profiles.js <<E
 "use strict";
 // orchil/profiles.js
 var profiles = {
-        "portal_game":{
+        "portal_gables":{
                 "method":   "websocket",
                 "protocol": "wss",
                 "web_protocol": "https",
