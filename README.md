@@ -2,17 +2,27 @@
 
 SkotOS is a library for creating games. The Gables is a simple example of doing that.
 
+It is highly, highly recommended that you read https://ChatTheatre.github.io/SkotOS-Doc for details on how to build a SkotOS game.
+
+## Running Locally on a Mac
+
+Run the script gables_game/deploy_scripts/mac_setup.sh to install the necessary programs, clone SkotOS-related Git repos and generally get everything set up. Once you've successfully set everything up, you can instead run gables_game/deploy_scripts/mac_start_server.sh for somewhat faster startup. Please note that YOUR FIRST STARTUP WILL BE QUITE SLOW as DGD compiles all its dynamic source into its in-memory representation. After that, it will dump its memory space to a file called skotos.database and will restart very quickly from that statedump.
+
+The Mac setup script should open a Google Chrome window allowing you to click through to the game, or to the WOE editor called the Tree of WOE.
+
 ## Creating a Linode VM
 
-The Linode Stackscript can be found in app\_stackscript.sh. You can paste it into a StackScript on Linode and create an instance from it.
+The Linode Stackscript can be found in deploy_scripts/gables\_stackscript.sh. You can paste it into a StackScript on Linode and create an instance from it.
 
-You'll need to create two DNS entries immediately, right after you hit "create" on the Linode. They should be called gables and gables-login on the subdomain you gave as a parameter to the script. For instance, I use madrubyscience.com, so my three hostnames would be gables.madrubyscience.com and gables-login.madrubyscience.com.
+You'll need to create three DNS entries immediately, right after you hit "create" on the Linode. They should be called gables, gables-login and meet on the subdomain you gave as a parameter to the script. For instance, I use madrubyscience.com, so my three hostnames would be gables.madrubyscience.com, gables-login.madrubyscience.com and meet.madrubyscience.com.
 
 Your instance should be at least 2GB in size. Anything smaller can't support MariaDB, it dies from lack of memory.
 
 ## Updating the Stackscript
 
-The Stackscript tries to be re-runnable where possible. So in many cases if you're changing it you can just re-run it with the appropriate environment variables set.
+The Stackscript tries to be re-runnable where possible. So in many cases if you're changing it you can just re-run it on the same instance with the appropriate environment variables set.
+
+Note that re-running your Stackscript will probably delete some or all changes you've made to your game. So don't do it casually.
 
 In some cases you may need to create a new Linode VM or reset an old one to a previous state and re-run.
 
