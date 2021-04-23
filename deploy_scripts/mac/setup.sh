@@ -8,7 +8,7 @@ if [ -z "$DGD_PID" ]
 then
     echo "DGD does not appear to be running. Good."
 else
-    echo "DGD appears to be running The Gables already with PID ${DGD_PID}. Shut down this copy of DGD with deploy_scripts/mac_stop_server.sh before messing with the install."
+    echo "DGD appears to be running The Gables already with PID ${DGD_PID}. Shut down this copy of DGD with deploy_scripts/mac/stop_server.sh before messing with the install."
     exit -1
 fi
 
@@ -61,4 +61,4 @@ dgd-manifest update
 "$HOME/.dgd-tools/git/https:__github.com_ChatTheatre_SkotOS.git/deploy_scripts/mac_setup/setup_no_server.sh"
 
 # We did setup. Now, for startup.
-./deploy_scripts/mac_start_server.sh
+./deploy_scripts/mac/start_server.sh

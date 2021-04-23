@@ -6,7 +6,7 @@ It is highly, highly recommended that you read https://ChatTheatre.github.io/Sko
 
 ## Running Locally on a Mac
 
-Run the script gables_game/deploy_scripts/mac_setup.sh to install the necessary programs, clone SkotOS-related Git repos and generally get everything set up. Once you've successfully set everything up, you can instead run gables_game/deploy_scripts/mac_start_server.sh for somewhat faster startup. Please note that YOUR FIRST STARTUP WILL BE QUITE SLOW as DGD compiles all its dynamic source into its in-memory representation. After that, it will dump its memory space to a file called skotos.database and will restart very quickly from that statedump.
+Run the script gables_game/deploy_scripts/mac/setup.sh to install the necessary programs, clone SkotOS-related Git repos and generally get everything set up. Once you've successfully set everything up, you can instead run gables_game/deploy_scripts/mac/start_server.sh for somewhat faster startup. Please note that YOUR FIRST STARTUP WILL BE QUITE SLOW as DGD compiles all its dynamic source into its in-memory representation. After that, it will dump its memory space to a file called skotos.database and will restart very quickly from that statedump.
 
 The Mac setup script should open a Google Chrome window allowing you to click through to the game, or to the WOE editor called the Tree of WOE.
 
