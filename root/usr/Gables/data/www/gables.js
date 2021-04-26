@@ -30,7 +30,7 @@
 			script.type = 'text/javascript';
 			script.src = 'https://' + jitsiDomain + '/external_api.js';
                 	document.head.appendChild(script);
-			setupJitsi();
+			//setupJitsi();
 		}
 	}
 	function setupJitsi() {
