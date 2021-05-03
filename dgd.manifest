@@ -11,7 +11,7 @@
     },
     "unbundled_goods": [
         {
-            "name": "SkotOS DGD Code",
+            "name": "SkotOS",
             "git": {
                 "url": "https://github.com/ChatTheatre/SkotOS.git",
                 "branch": "master"
