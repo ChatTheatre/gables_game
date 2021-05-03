@@ -8,3 +8,4 @@ dgd
 log/*
 skotos.database
 skotos.database.old
+.repos/**
