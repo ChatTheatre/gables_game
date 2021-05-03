@@ -31,7 +31,7 @@ else
 fi
 
 # Open iTerm/terminal window showing DGD process log
-open -a $TERM_PROGRAM -n "$GAME_ROOT/deploy_scripts/mac/show_dgd_logs.sh"
+$SKOTOS_DIR/deploy_scripts/mac/new_terminal.sh "$GAME_ROOT/deploy_scripts/mac/show_dgd_logs.sh"
 
 # Wait until SkotOS is booted and responsive, start auth server
 "$SKOTOS_DIR/deploy_scripts/mac_setup/poststart_no_server.sh"
