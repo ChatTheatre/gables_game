@@ -1,19 +1,23 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    dgd-tools (0.1.11)
+    dgd-tools (0.1.12)
       nokogiri (~> 1.10.5)
       optimist (~> 3.0.1)
+      treetop
     mini_portile2 (2.4.0)
     nokogiri (1.10.10)
       mini_portile2 (~> 2.4.0)
     optimist (3.0.1)
+    polyglot (0.3.5)
+    treetop (1.6.11)
+      polyglot (~> 0.3)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  dgd-tools (>= 0.1.11)
+  dgd-tools (>= 0.1.12)
 
 BUNDLED WITH
-   2.1.2
+   2.1.4
