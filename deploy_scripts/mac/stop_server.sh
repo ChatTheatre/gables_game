@@ -13,7 +13,7 @@ cd $SCRIPT_DIR
 cd ../..
 export GAME_ROOT="$(pwd)"
 
-SKOTOS_DIR="$HOME/.dgd-tools/git/https:__github.com_ChatTheatre_SkotOS.git"
+SKOTOS_DIR="$GAME_ROOT/.repos/SkotOS"
 
 # This will stop all the non-DGD processes (e.g. relays, Wafer) and *might* stop
 # DGD as well. However, to be sure we should shut down DGD ourselves.

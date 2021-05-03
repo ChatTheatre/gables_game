@@ -8,7 +8,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd $SCRIPT_DIR
 cd ../..
 export GAME_ROOT="$(pwd)"
-SKOTOS_DIR="$HOME/.dgd-tools/git/https:__github.com_ChatTheatre_SkotOS.git"
+SKOTOS_DIR="$GAME_ROOT/.repos/SkotOS"
 
 # You know what's easy to do accidentally? Not update.
 dgd-manifest update
@@ -31,7 +31,7 @@ else
 fi
 
 # Open iTerm/terminal window showing DGD process log
-$SKOTOS_DIR/deploy_scripts/mac/new_terminal.sh "$GAME_ROOT/deploy_scripts/mac/show_dgd_logs.sh"
+$SKOTOS_DIR/deploy_scripts/mac_setup/new_terminal.sh "$GAME_ROOT/deploy_scripts/mac/show_dgd_logs.sh"
 
 # Wait until SkotOS is booted and responsive, start auth server
 "$SKOTOS_DIR/deploy_scripts/mac_setup/poststart_no_server.sh"
