@@ -8,8 +8,10 @@
 # GAME_GIT_URL=
 # <UDF name="game_git_branch" label="The Game's Git Branch" default="master" example="Game branch, tag or commit to clone for your game." optional="false" />
 # GAME_GIT_BRANCH=
-# <UDF name="skotos_stackscript_url" label="URL for the base stackscript to build on" default="https://raw.githubusercontent.com/ChatTheatre/SkotOS/master/deploy_scripts/stackscript/linode_stackscript.sh" example="SkotOS stackscript to build on top of." optional="false" />
-# SKOTOS_STACKSCRIPT_URL=
+# <UDF name="skotos_git_url" label="Skotos Git URL" default="https://github.com/ChatTheatre/SkotOS" example="SkotOS Git URL to clone for your game." optional="false" />
+# SKOTOS_GIT_URL=
+# <UDF name="skotos_git_branch" label="Skotos Git Branch" default="master" example="SkotOS branch, tag or commit to clone for your game." optional="false" />
+# SKOTOS_GIT_BRANCH=
 
 set -e
 set -x
@@ -42,8 +44,6 @@ export HOSTNAME="gables"
 export FQDN_CLIENT=gables."$SUBDOMAIN"
 export FQDN_LOGIN=gables-login."$SUBDOMAIN"
 export FQDN_JITSI=meet."$SUBDOMAIN"
-export SKOTOS_GIT_URL=https://github.com/ChatTheatre/SkotOS
-export SKOTOS_GIT_BRANCH=master
 export DGD_GIT_URL=https://github.com/ChatTheatre/dgd
 export DGD_GIT_BRANCH=master
 export THINAUTH_GIT_URL=https://github.com/ChatTheatre/thin-auth
@@ -53,7 +53,10 @@ export TUNNEL_GIT_BRANCH=master
 
 if [ -z "$SKIP_INNER" ]
 then
-    echo "Running SkotOS StackScript..."
+    # If we have the Github URL and the branch, we can download the stackscript directly.
+    SKOTOS_STACKSCRIPT_URL=`echo $SKOTOS_GIT_URL | sed -E "s/https:\/\/github.com\/([0-9a-zA-Z]+)\/([0-9a-zA-Z]+).*/https:\/\/raw.githubusercontent.com\/\1\/\2\/$SKOTOS_GIT_BRANCH\/deploy_scripts\/stackscript\/linode_stackscript.sh/"`
+
+    echo "Running SkotOS StackScript based on raw URL $SKOTOS_STACKSCRIPT_URL..."
     # Set up the node using the normal SkotOS Linode stackscript
     curl $SKOTOS_STACKSCRIPT_URL > ~root/skotos_stackscript.sh
     . ~root/skotos_stackscript.sh
