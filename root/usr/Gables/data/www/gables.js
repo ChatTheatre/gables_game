@@ -33,7 +33,7 @@
 
                 	// If Jitsi fails for some reason, that should not block the
                 	// text-only connection from being established properly.
-			setTimeout(setupJitsi);
+			script.onload = setupJitsi;
 		}
 	}
 	function setupJitsi() {
