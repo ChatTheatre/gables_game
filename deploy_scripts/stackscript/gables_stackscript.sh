@@ -103,22 +103,11 @@ sudo -u skotos -g skotos ~skotos/dgd_pre_setup.sh
 # But we also copy those files into /var/game/root (note: no dot) so that if the user later
 # rebuilds with dgd-manifest, the modified files will be kept.
 
-# Fix the login URL
-HTTP_FILE=/var/game/.root/usr/HTTP/sys/httpd.c
-if grep -F "www.skotos.net/user/login.php" $HTTP_FILE
-then
-    # Unpatched - need to patch
-    sed -i "s_https://www.skotos.net/user/login.php_http://${FQDN_LOGIN}_" $HTTP_FILE
-else
-    echo "HTTPD appears to be patched already. Moving on..."
-fi
-sudo -u skotos -g skotos mkdir -p /var/game/usr/HTTP/sys
-sudo -u skotos -g skotos cp $HTTP_FILE /var/game/usr/HTTP/sys/
-
 # Instance file
 sudo -u skotos -g skotos cat >/var/game/.root/usr/System/data/instance <<EndOfMessage
 portbase 10000
 hostname $FQDN_CLIENT
+login_hostname $FQDN_LOGIN
 bootmods DevSys Theatre Jonkichi Tool Generic SMTP Gables
 textport 443
 real_textport 10443
