@@ -1,15 +1,18 @@
 "use strict";
+
+// If you're not using Audio chat, remove the calls to anything marked "Jitsi".
+
 //-----Component Setup
 	var bigMapHREF;
-	var jitsiDomain;
 	function initTheatre() {
 		addComponent('chat_theatre'   , 'left'    , false, 'openerWin', ['http://game.gables.chattheatre.com/'], '<img alt="Grand Theatre" src="http://images.gables.chattheatre.com/gamelogo.jpg">');
 		addComponent('skotos_logo'    , 'right'   , false);
 		addComponent('clientui'       , 'skotos_logo');
 		addComponent('save_button'  , 'clientui', false, 'saveCurrentWindow', [], '<i class="fas fa-file-download"></i>', 'Save Log');
 		addComponent('settings_button', 'clientui', false, 'openSettings', [], '<i class="fas fa-bars"></i>', 'Client Preferences');
-		addComponent('newplayers'     , 'right'   , false, 'openerWin', ['http://game.gables.chattheatre.com/Theatre/starting.sam'], '<div class="button" alt="Getting Started" title="Getting Started">Getting Started</div>');
-		addComponent('newplayers'     , 'right'   , false, 'openerWin', ['http://game.gables.chattheatre.com/Theatre/mastering.sam'], '<div class="button" alt="Mastering Chat" title="Mastering Chat">Mastering Chat</div>');
+		addComponent('newplayers_gs'     , 'right'   , false, 'openerWin', ['http://game.gables.chattheatre.com/Theatre/starting.sam'], '<div class="button" alt="Getting Started" title="Getting Started">Getting Started</div>');
+		addComponent('newplayers_mc'     , 'right'   , false, 'openerWin', ['http://game.gables.chattheatre.com/Theatre/mastering.sam'], '<div class="button" alt="Mastering Chat" title="Mastering Chat">Mastering Chat</div>');
+		addComponent('audio_settings' , 'right'   , false);
 		addComponent('right_fill'     , 'right'   , 'fill');
 		addComponent('image_map'      , 'right'   , false, 'popupMapWindow', []);
 		addComponent('image_map_img'  , 'image_map', false);
@@ -22,34 +25,8 @@
 		addComponent('comp_s' , 'right_fill', 'comp_button', 'compassArrow', ['south'],     false, 'go south');
 		addComponent('comp_se', 'right_fill', 'comp_button', 'compassArrow', ['southeast'], false, 'go southeast');
 
-		if(window.location.hostname != "localhost") {
-			jitsiDomain = window.location.hostname.replace("gables.", "meet.");
-
-			// Add the Jitsi external_api script for our correct domain
-			var script = document.createElement('script');
-			script.type = 'text/javascript';
-			script.src = 'https://' + jitsiDomain + '/external_api.js';
-                	document.head.appendChild(script);
-
-                	// If Jitsi fails for some reason, that should not block the
-                	// text-only connection from being established properly.
-			script.onload = setupJitsi;
-		}
-	}
-	function setupJitsi() {
-		// Jitsi Setup - for more Jitsi, see: https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe
-		// For list of config options: https://github.com/jitsi/jitsi-meet/blob/master/config.js
-		const options = {
-		    roomName: 'GablesTop',
-		    width: 600,
-		    height: 300,
-		    parentNode: document.querySelector('#meet'),
-		    configOverwrite: { startAudioOnly: true },
-		    userInfo: {
-		        displayName: loadCookie("user")
-		    }
-		};
-		const api = new JitsiMeetExternalAPI(jitsiDomain, options);
+		addJitsiComponentsTo('audio_settings');
+		initJitsi();
 	}
 
 	function updateCompass(bitfield, image, dir, bit) {
@@ -64,6 +41,12 @@
 	function doSkoot(num, msg) {
 		num = Number(num);
 		console.log("SKOOT " + num + " " + msg);
+
+		if(isJitsiSkoot(num)) {
+			doJitsiSkoot(num, msg);
+			return;
+		}
+
 		switch (num) {
 		case 1:
 			var img = document.getElementById("image_map_img");
@@ -107,9 +90,6 @@
 		case 10:
 			showHVMapLinks(msg);
 			break;
-		case 21:
-			// This is for a player or similar creature entering
-			break;
 		case 70:
 	   		popupWin(msg, "SkotosToolSourceView", 800, 600);
 			break;
@@ -121,7 +101,7 @@
 		}
 	}
 	function popupMapWindow() {
-			popupArtWin(bigMapHREF, 'Map', 'Lovecraft Country Overview Map');
+			popupArtWin(bigMapHREF, 'Map', 'SkotOS Overview Map');
 	}
 	function compassArrow(direction) {
 		sendUI('go ' + direction);
@@ -393,4 +373,4 @@
 		artwin.focus();
     }
 //-----Initialization Code
-	var serverCode = "CM";
+	var serverCode = "Gables";
