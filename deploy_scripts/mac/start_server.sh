@@ -42,4 +42,4 @@ cat "$SKOTOS_DIR/deploy_scripts/mac_setup/post_install_instructions.txt"
 open -a "Google Chrome" "http://localhost:2072/"
 
 # If uncommented, this will open an iTerm/Terminal window to the Wiztool
-#open -a Terminal -n "telnet localhost 10098"
+#open -a Terminal -n "telnet localhost 11098"
