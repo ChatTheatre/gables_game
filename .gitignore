@@ -9,3 +9,4 @@ log/*
 skotos.database
 skotos.database.old
 .repos/**
+run_gables.sh
